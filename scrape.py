@@ -390,7 +390,7 @@ class ValgrindReason(Reason):
         result = defaultdict(list)
         # Lines like:
         # 2014-08-22T20:07:18.668 ERROR:tasks.ceph:saw valgrind issue   <kind>Leak_DefinitelyLost</kind> in /var/log/ceph/valgrind/osd.3.log.gz
-        for line in grep(os.path.join(job.path, "teuthology.log"), "</kind> in s"):
+        for line in grep(os.path.join(job.path, "teuthology.log"), "</kind> in "):
             match = re.search("<kind>(.+)</kind> in .+/(.+)", line)
             if not match:
                 log.warning("Misunderstood line: {0}".format(line))
