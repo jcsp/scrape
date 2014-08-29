@@ -164,9 +164,13 @@ class DeadReason(Reason):
     def __init__(self, job):
         self.description = "Dead"
         self.last_tlog_line = job.get_last_tlog_line()
+        self.backtrace = job.get_backtrace()
 
     def get_description(self):
         return "Dead: {0}".format(self.last_tlog_line)
+
+    def get_detail(self):
+        return self.backtrace
 
     @classmethod
     def could_be(cls, job):
@@ -175,6 +179,15 @@ class DeadReason(Reason):
     def match(self, job):
         if job.summary_data is not None:
             return False
+
+        if self.backtrace:
+            if job.get_backtrace():
+                # We both have backtrace: use that to decide if we're the same
+                ratio = difflib.SequenceMatcher(None, self.backtrace, job.get_backtrace()).ratio()
+                return ratio > 0.5
+            else:
+                # I have BT but he doesn't, so we're different
+                return False
 
         if self.last_tlog_line is None and job.get_last_tlog_line() is None:
             return True
