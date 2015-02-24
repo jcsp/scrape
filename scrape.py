@@ -75,8 +75,15 @@ class GenericReason(Reason):
             ratio = difflib.SequenceMatcher(None, self.backtrace, job.get_backtrace()).ratio()
             return ratio > 0.5
         else:
-            reason_ratio = difflib.SequenceMatcher(None, self.failure_reason, job.get_failure_reason()).ratio()
-            return reason_ratio > 0.5
+            if "Test failure:" in self.failure_reason:
+                return self.failure_reason == job.get_failure_reason()
+            elif re.search("workunit test (.*)\) on ", self.failure_reason):
+                workunit_name = re.search("workunit test (.*)\) on ", self.failure_reason).group(1)
+                other_match = re.search("workunit test (.*)\) on ", job.get_failure_reason())
+                return other_match is not None and workunit_name == other_match.group(1)
+            else:
+                reason_ratio = difflib.SequenceMatcher(None, self.failure_reason, job.get_failure_reason()).ratio()
+                return reason_ratio > 0.5
 
 
 class RegexReason(Reason):
