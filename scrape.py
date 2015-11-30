@@ -490,7 +490,7 @@ class Scraper(object):
 
         log.info("Found {0} distinct failure reasons".format(len(reasons)))
         for reason, jobs in reasons.items():
-            job_spec = [j.job_id for j in jobs].__str__() if len(jobs) < 30 else "{0} jobs".format(len(jobs))
+            job_spec = "{0} jobs: {1}".format(len(jobs), [j.job_id for j in jobs]) if len(jobs) < 30 else "{0} jobs".format(len(jobs))
             log.info(reason.get_description())
             detail = reason.get_detail()
             if detail:
