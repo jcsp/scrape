@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import difflib
 from errno import ENOENT
 from gzip import GzipFile
