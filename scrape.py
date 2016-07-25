@@ -261,6 +261,14 @@ class Job(object):
         self.path = path
         self.job_id = job_id
 
+        try:
+            self.config = yaml.load(open(os.path.join(self.path, "config.yaml"), 'r'))
+            self.description = self.config['description']
+            assert self.description
+        except IOError:
+            self.config = None
+            self.description = None
+
         summary_path = os.path.join(self.path, "summary.yaml")
         try:
             self.summary_data = yaml.load(open(summary_path, 'r'))
@@ -496,8 +504,13 @@ class Scraper(object):
             if detail:
                 log.info(detail)
             log.info(job_spec)
+            suites = [set(j.description.split()) for j in jobs if j.description != None]
+            if len(suites) > 1:
+                log.info("suites intersection: {0}".format(sorted(set.intersection(*suites))))
+                log.info("suites union: {0}".format(sorted(set.union(*suites))))
+            elif len(suites) == 1:
+                log.info("suites: {0}".format(sorted(suites[0])))
             log.info("")
-
 
 if __name__ == '__main__':
     Scraper(sys.argv[1]).analyze()
