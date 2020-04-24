@@ -323,8 +323,8 @@ class Job(object):
                 # We're in a backtrace, push the line onto the list
                 if len(bt_lines) > MAX_BT_LINES:
                     # Something wrong with our parsing, drop it
-                    log.warning("Ignoring malparsed backtrace: {0}".format(
-                        ", ".join(bt_lines[0:3])
+                    log.warning("Job {0} ignoring malparsed backtrace: {1}".format(
+                        self.job_id, ", ".join(bt_lines[0:3])
                     ))
                     bt_lines = []
                 bt_lines.append(line)
