@@ -306,8 +306,10 @@ class Job(object):
             # Log prefix from teuthology.log
             if ".stderr:" in line:
                 line = line.split(".stderr:")[1]
+            elif len(bt_lines):
+                return ("".join(bt_lines)).strip(), assertion
 
-            if "FAILED assert" in line:
+            if any(x in line for x in ["FAILED assert", "FAILED ceph_assert"]):
                 assertion = line.strip()
 
             if line.startswith(" ceph version"):
