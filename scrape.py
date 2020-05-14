@@ -31,7 +31,7 @@ def grep(path, expr):
     p = subprocess.Popen(["grep", expr, path], stdout=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode == 0:
-        return out.split("\n")
+        return out.decode().split("\n")
     else:
         return []
 
@@ -415,7 +415,7 @@ class ValgrindReason(Reason):
                 log.warning("Misunderstood line: {0}".format(line))
                 continue
             err_typ, log_basename = match.groups()
-            svc_typ = log_basename.split(".")[0]
+            svc_typ = log_basename.decode().split(".")[0]
             if err_typ not in result[svc_typ]:
                 result[svc_typ].append(err_typ)
                 result[svc_typ] = sorted(result[svc_typ])
@@ -424,7 +424,7 @@ class ValgrindReason(Reason):
 
     def get_description(self):
         desc_bits = []
-        for service, types in self.service_types.items():
+        for service, types in list(self.service_types.items()):
             desc_bits.append("{0} ({1})".format(service, ", ".join(types)))
         return "Valgrind: " + ", ".join(desc_bits)
 
@@ -489,7 +489,7 @@ class Scraper(object):
                 continue
 
             matched = False
-            for reason, reason_jobs in reasons.items():
+            for reason, reason_jobs in list(reasons.items()):
                 if reason.match(job):
                     reason_jobs.append(job)
                     matched = True
@@ -499,7 +499,7 @@ class Scraper(object):
                 reasons[give_me_a_reason(job)].append(job)
 
         log.info("Found {0} distinct failure reasons".format(len(reasons)))
-        for reason, jobs in reasons.items():
+        for reason, jobs in list(reasons.items()):
             job_spec = "{0} jobs: {1}".format(len(jobs), [j.job_id for j in jobs]) if len(jobs) < 30 else "{0} jobs".format(len(jobs))
             log.info(reason.get_description())
             detail = reason.get_detail()
